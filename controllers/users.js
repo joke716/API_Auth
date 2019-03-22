@@ -1,8 +1,6 @@
-
 const JWT = require('jsonwebtoken');
 const User = require('../models/user');
-
-const { JWT_SECRET } = require('../config');
+const { JWT_SECRET } = require('../configuration');
 
 signToken = user => {
     return JWT.sign({
@@ -13,15 +11,8 @@ signToken = user => {
     }, JWT_SECRET);
 }
 
-
 module.exports = {
-
     signUp: async (req, res, next) => {
-        // Email & Password
-        // req.value.body
-        // console.log('contents of req.value.body', req.value.body);
-        // console.log('UsersController.signUp() called!');
-
         const { email, password } = req.value.body;
 
         // Check if there is a user with the same email
@@ -32,32 +23,28 @@ module.exports = {
 
         // Create a new user
         const newUser = new User({
-            email: email,
-            password: password
+            method: 'local',
+            local: {
+                email: email,
+                password: password
+            }
+
         });
 
         await newUser.save();
 
-
         // Generate the token
         const token = signToken(newUser);
 
-
-
         // Respond with token
-        res.status(200).json({ user: token });
-
+        res.status(200).json({ token });
     },
 
     signIn: async (req, res, next) => {
         // Generate token
-        console.log('UsersController.signIn() called!');
-        //
         const token = signToken(req.user);
-        console.log(token);
         res.status(200).json({ token });
     },
-
 
     googleOAuth: async (req, res, next) => {
         console.log('got here');
@@ -70,5 +57,4 @@ module.exports = {
         console.log('I managed to get here!');
         res.json({ secret: "resource" });
     }
-
-};
+}

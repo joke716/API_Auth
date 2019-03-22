@@ -1,7 +1,8 @@
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
+const Schema = mongoose.Schema;
+
 
 
 // Create a schema
@@ -55,8 +56,8 @@ const userSchema = new Schema({
 
 
 userSchema.pre('save', async function(next) {
-    try {
 
+    try {
         console.log('entered');
         if (this.method !== 'local') {
             next();
@@ -67,8 +68,8 @@ userSchema.pre('save', async function(next) {
         // Generate a password hash (salt + hash)
         const passwordHash = await bcrypt.hash(this.local.password, salt);
         // Re-assign hashed version over original, plain text password
-        this..local.password = passwordHash;
-        console.log('exited');
+        this.password = passwordHash;
+        // console.log('exited');
         next();
     } catch(error) {
         next(error);
